@@ -41,6 +41,7 @@ This project is a Vue.js-based task management application designed to help user
 
 ### App Screenshot
 
+![TodoGenius](https://github.com/Lucas-Erkana/bag_to_do_list/assets/41428579/c2be8142-73c5-46e2-990f-51628888b8c0)
 
 
 
