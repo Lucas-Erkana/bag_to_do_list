@@ -63,3 +63,8 @@ li.completed {
     text-decoration: line-through;
     background-color: #d3ffd3;
 }
+
+/* Add this style to your CSS file */
+li.important {
+    background-color: #ffc107; /* Change this color to your preference */
+}
