@@ -2,126 +2,125 @@
 
 // Wait until the DOM is fully loaded before executing the script
 document.addEventListener("DOMContentLoaded", function () {
-    // Retrieve HTML elements for input, add button, and task list
     const taskInput = document.getElementById("task-input");
     const addButton = document.getElementById("add-button");
     const taskList = document.getElementById("task-list");
 
     // Load tasks from local storage when the page loads
     const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    savedTasks.sort((a, b) => (b.important === a.important) ? 0 : b.important ? -1 : 1); // Sort tasks so that important ones are at the top
-    // Render tasks from local storage
-    savedTasks.forEach((taskText) => {
-        renderTask(taskText);
+    savedTasks.sort((a, b) => (b.important === a.important) ? 0 : b.important ? -1 : 1);
+    savedTasks.forEach((task) => {
+        renderTask(task);
     });
 
-    // Add an event listener to the add button for adding new tasks
     addButton.addEventListener("click", addTask);
 
-    // Function to add a new task
     function addTask() {
         const taskText = taskInput.value.trim();
         if (taskText !== "") {
-            const task = { text: taskText, important: false }; // Task as an object
+            const task = { text: taskText, important: false };
             renderTask(task);
             saveTask(task);
             taskInput.value = "";
         }
     }
-    
 
-    // Function to render a task in the DOM
     function renderTask(task) {
-        const listItem = document.createElement("li"); // Create a new list item
-        // Set the inner HTML of the list item, including the task text and buttons
+        const listItem = document.createElement("li");
+        listItem.classList.add("task-item");
         if (task.important) {
-            listItem.classList.add("important"); // Apply styling if important
+            listItem.classList.add("important");
         }
         listItem.innerHTML = `
-            <span>${task.text}</span>
+            <span class="task-text">${task.text}</span>
             <button class="delete-button">Delete</button>
             <button class="important-button">Important</button>
         `;
-        // Add event listeners to the delete and important buttons
         listItem.querySelector(".delete-button").addEventListener("click", deleteTask);
         listItem.querySelector(".important-button").addEventListener("click", toggleImportant);
-        taskList.prepend(listItem); // Add the new list item to the beginning of the list
+        listItem.querySelector(".task-text").addEventListener("click", makeEditable);
+        taskList.prepend(listItem);
     }
 
-    // Function to save a task in local storage
+    function makeEditable(event) {
+        const span = event.target;
+        const listItem = span.parentElement;
+        const originalText = span.textContent;
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = originalText;
+        input.classList.add("task-input-edit");
+        listItem.insertBefore(input, span);
+        span.style.display = "none";
+
+        input.focus();
+
+        input.addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                updateTask(input, listItem, originalText);
+            }
+        });
+
+        input.addEventListener("blur", function () {
+            updateTask(input, listItem, originalText);
+        });
+    }
+
+    function updateTask(input, listItem, originalText) {
+        const newText = input.value.trim();
+        const span = listItem.querySelector(".task-text");
+        if (newText) {
+            span.textContent = newText;
+            updateTaskInStorage(originalText, newText, listItem.classList.contains("important"));
+        } else {
+            span.textContent = originalText; // Revert to original text if input is empty
+        }
+        span.style.display = "";
+        listItem.removeChild(input);
+    }
+
     function saveTask(task) {
         const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
-        
-        savedTasks.unshift(task); // Add the new task object to the beginning
+        savedTasks.unshift(task);
         localStorage.setItem("tasks", JSON.stringify(savedTasks));
     }
 
-    // Function to delete a task
     function deleteTask(event) {
-        const listItem = event.target.parentElement; // Get the parent list item of the delete button
-        const taskText = listItem.querySelector("span").textContent; // Get the task text
-        removeTaskFromStorage(taskText); // Remove the task from local storage
-        listItem.remove(); // Remove the list item from the DOM
+        const listItem = event.target.parentElement;
+        const taskText = listItem.querySelector(".task-text").textContent;
+        removeTaskFromStorage(taskText);
+        listItem.remove();
     }
 
-    // Function to toggle the importance of a task
     function toggleImportant(event) {
-        const listItem = event.target.parentElement; // Get the parent list item of the important button
-        listItem.classList.toggle("important"); // Toggle the 'important' class
-        // Update the task in local storage with its new importance status
-        updateTaskInStorage(listItem.querySelector("span").textContent, listItem.classList.contains("important"));
+        const listItem = event.target.parentElement;
+        listItem.classList.toggle("important");
+        const taskText = listItem.querySelector(".task-text").textContent;
+        updateTaskInStorage(taskText, taskText, listItem.classList.contains("important"));
     }
 
-    // Function to remove a task from local storage
     function removeTaskFromStorage(taskText) {
         const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
-        const index = savedTasks.indexOf(taskText); // Find the index of the task
-        if (index !== -1) {
-            savedTasks.splice(index, 1); // Remove the task from the array
-            localStorage.setItem("tasks", JSON.stringify(savedTasks)); // Save the updated array in local storage
-        }
-    }
-
-    // Function to update a task in local storage
-    function updateTaskInStorage(taskText, isImportant) {
-        const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
         const index = savedTasks.findIndex(t => t.text === taskText);
-    
         if (index !== -1) {
-            // Update the 'important' status of the task
-            savedTasks[index].important = isImportant;
-    
-            // Reorder the task
-            if (isImportant) {
-                // Move the important task to the top of the list
-                const importantTask = savedTasks.splice(index, 1)[0];
-                savedTasks.unshift(importantTask);
-            } else {
-                // Move the unimportant task towards the end of the list
-                // This step can be more complex depending on how you want to handle non-important tasks ordering
-                const nonImportantTask = savedTasks.splice(index, 1)[0];
-                savedTasks.push(nonImportantTask);
-            }
-    
-            // Save the updated tasks back to local storage
+            savedTasks.splice(index, 1);
             localStorage.setItem("tasks", JSON.stringify(savedTasks));
         }
     }
-    
-    // Add an event listener to the task input for adding tasks with the Enter key
+
+    function updateTaskInStorage(originalText, newText, isImportant) {
+        const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        const index = savedTasks.findIndex(t => t.text === originalText);
+        if (index !== -1) {
+            savedTasks[index].text = newText;
+            savedTasks[index].important = isImportant;
+            localStorage.setItem("tasks", JSON.stringify(savedTasks));
+        }
+    }
+
     taskInput.addEventListener("keydown", function (event) {
         if (event.key === "Enter") {
-            addTask(); // Call the addTask function when Enter key is pressed
-        }
-    });
-
-    // Add an event listener to the task list for marking tasks as completed
-    taskList.addEventListener("click", function (event) {
-        const listItem = event.target.parentElement; // Get the parent list item of the clicked element
-        if (event.target.tagName === "SPAN") {
-            listItem.classList.toggle("completed"); // Toggle the 'completed' class on the list item
-            // Update the task in local storage with its new completed status
-            updateTaskInStorage(listItem.querySelector("span").textContent, listItem.classList.contains("important"));
+            addTask();
         }
     });
 });
