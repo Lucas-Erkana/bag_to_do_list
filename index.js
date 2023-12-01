@@ -1,3 +1,4 @@
+// JavaScript code for the To-Do List application
 document.addEventListener("DOMContentLoaded", function () {
     const taskInput = document.getElementById("task-input");
     const addButton = document.getElementById("add-button");
@@ -12,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
             listItem.innerHTML = `
                 <span>${taskText}</span>
                 <button class="delete-button">Delete</button>
+                <button class="important-button">Important</button>
             `;
             listItem.querySelector(".delete-button").addEventListener("click", deleteTask);
             taskList.prepend(listItem);
@@ -34,6 +36,16 @@ document.addEventListener("DOMContentLoaded", function () {
         const listItem = event.target.parentElement;
         if (event.target.tagName === "SPAN") {
             listItem.classList.toggle("completed");
+        }
+    });
+
+    // Add an event listener to the task list to handle marking tasks as important
+    taskList.addEventListener("click", function (event) {
+        const listItem = event.target.parentElement;
+        if (event.target.classList.contains("important-button")) {
+            listItem.classList.toggle("important");
+            // Move the important task to the top
+            taskList.prepend(listItem);
         }
     });
 });
