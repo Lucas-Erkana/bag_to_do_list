@@ -46,7 +46,7 @@ This project is a Vue.js-based task management application designed to help user
 
 ## Live Demo
 
-To see this project's live demo, please click [here]().
+To see this project's live demo, please click [here](https://bag-to-do-list.vercel.app/).
 
 ## 🛠 Built With <a name="built-with"></a>
 
