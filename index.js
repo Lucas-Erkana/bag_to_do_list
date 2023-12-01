@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Load tasks from local storage when the page loads
     const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
-
+    savedTasks.sort((a, b) => (b.important === a.important) ? 0 : b.important ? -1 : 1); // Sort tasks so that important ones are at the top
     // Render tasks from local storage
     savedTasks.forEach((taskText) => {
         renderTask(taskText);
@@ -21,20 +21,24 @@ document.addEventListener("DOMContentLoaded", function () {
     // Function to add a new task
     function addTask() {
         const taskText = taskInput.value.trim();
-        console.log("Adding task:", taskText); // Debugging line
         if (taskText !== "") {
-            renderTask(taskText);
-            saveTask(taskText);
+            const task = { text: taskText, important: false }; // Task as an object
+            renderTask(task);
+            saveTask(task);
             taskInput.value = "";
         }
     }
+    
 
     // Function to render a task in the DOM
-    function renderTask(taskText) {
+    function renderTask(task) {
         const listItem = document.createElement("li"); // Create a new list item
         // Set the inner HTML of the list item, including the task text and buttons
+        if (task.important) {
+            listItem.classList.add("important"); // Apply styling if important
+        }
         listItem.innerHTML = `
-            <span>${taskText}</span>
+            <span>${task.text}</span>
             <button class="delete-button">Delete</button>
             <button class="important-button">Important</button>
         `;
@@ -45,11 +49,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Function to save a task in local storage
-    function saveTask(taskText) {
+    function saveTask(task) {
         const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
-        console.log("Before adding new task:", savedTasks); // Debugging line
-        savedTasks.unshift(taskText);
-        console.log("After adding new task:", savedTasks); // Debugging line
+        
+        savedTasks.unshift(task); // Add the new task object to the beginning
         localStorage.setItem("tasks", JSON.stringify(savedTasks));
     }
 
@@ -82,18 +85,29 @@ document.addEventListener("DOMContentLoaded", function () {
     // Function to update a task in local storage
     function updateTaskInStorage(taskText, isImportant) {
         const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
-        const index = savedTasks.indexOf(taskText); // Find the index of the task
+        const index = savedTasks.findIndex(t => t.text === taskText);
+    
         if (index !== -1) {
-            savedTasks.splice(index, 1); // Remove the task from the array
+            // Update the 'important' status of the task
+            savedTasks[index].important = isImportant;
+    
+            // Reorder the task
             if (isImportant) {
-                savedTasks.unshift(taskText); // Add to the beginning if important
+                // Move the important task to the top of the list
+                const importantTask = savedTasks.splice(index, 1)[0];
+                savedTasks.unshift(importantTask);
             } else {
-                savedTasks.push(taskText); // Add to the end if not important
+                // Move the unimportant task towards the end of the list
+                // This step can be more complex depending on how you want to handle non-important tasks ordering
+                const nonImportantTask = savedTasks.splice(index, 1)[0];
+                savedTasks.push(nonImportantTask);
             }
-            localStorage.setItem("tasks", JSON.stringify(savedTasks)); // Save the updated array in local storage
+    
+            // Save the updated tasks back to local storage
+            localStorage.setItem("tasks", JSON.stringify(savedTasks));
         }
     }
-
+    
     // Add an event listener to the task input for adding tasks with the Enter key
     taskInput.addEventListener("keydown", function (event) {
         if (event.key === "Enter") {
