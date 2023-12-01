@@ -6,6 +6,7 @@ body {
 }
 
 .container {
+    flex-grow: 1; /* Allow container to grow and fill available space */
     max-width: 800px; /* Wider interface */
     margin: 0 auto;
     background-color: #fff;
@@ -133,6 +134,17 @@ li.important {
     background-color: #ffc107; /* Color for important tasks */
 }
 
+footer {
+    color: white; /* Text color */
+    text-align: center; /* Center the text */
+    padding: 10px 0; /* Padding for top and bottom */
+    width: 100%;
+    height: 50px; /* Your Footer's Height */
+    position: relative;
+    left: 0;
+}
+  
+
 /* Mobile version styles */
 @media (max-width: 768px) {
     .container {
@@ -140,9 +152,6 @@ li.important {
         padding: 12px; /* 40% reduction */
     }
 
-    h1 {
-        font-size: 60%; /* 40% reduction */
-    }
 
     #task-input,
     #add-button,

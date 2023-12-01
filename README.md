@@ -1,6 +1,9 @@
 <a name="readme-top"></a>
 
 <h1 align='center'> TodoGenius - Your Task Management Solution 🚀 </h1>
+ <div align="center">
+    <img src="images/icon.png" width="100" height="auto" />
+</div>
 
 
 
