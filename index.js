@@ -11,9 +11,19 @@ document.addEventListener("DOMContentLoaded", function () {
     let savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
     displayTasks();
 
+    taskInput.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            categorySelector.style.display = "block";
+            // Optional: prevent the default action to avoid form submission
+            event.preventDefault();
+        }
+    });
+
     addButton.addEventListener("click", () => {
         categorySelector.style.display = "block";
     });
+
+    
 
     taskCategory.addEventListener("change", () => {
         const taskText = taskInput.value.trim();
@@ -28,6 +38,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     categoryFilters.forEach(filter => filter.addEventListener('change', filterTasks));
+    // Sort tasks so that important ones are at the top
+    savedTasks.sort((a, b) => a.important - b.important);
 
     function displayTasks(selectedCategory = 'All') {
         taskList.innerHTML = '';

@@ -26,12 +26,18 @@
                 <option value="Business">Business</option>
             </select>
         </div>
-        <div>
-            <label>Filter by:</label>
-            <input type="radio" name="category-filter" value="All" checked> All
-            <input type="radio" name="category-filter" value="Personal"> Personal
-            <input type="radio" name="category-filter" value="Business"> Business
+        <h4>Filter by:</h4>
+        <div class="filtercategory">
+            <input type="radio" id="filter-all" name="category-filter" value="All" checked>
+            <label for="filter-all">All</label>
+        
+            <input type="radio" id="filter-personal" name="category-filter" value="Personal">
+            <label for="filter-personal">Personal</label>
+        
+            <input type="radio" id="filter-business" name="category-filter" value="Business">
+            <label for="filter-business">Business</label>
         </div>
+        
         <ul id="task-list">
             <!-- Tasks will be dynamically added here -->
             <!-- Added 'Important' button for task prioritization -->

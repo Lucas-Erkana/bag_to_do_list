@@ -143,7 +143,69 @@ footer {
     position: relative;
     left: 0;
 }
-  
+/* Categories */
+.filtercategory {
+    display: flex;
+    justify-content: space-around;
+    cursor: pointer;
+}
+
+.filtercategory input[type="radio"] {
+    display: none; /* Hide the default radio button */
+}
+
+.filtercategory label {
+    display: block;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 5px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.filtercategory input[type="radio"]:checked + label {
+    border-color: #007bff; /* Change color when selected */
+    background-color: #e7f3ff; /* Optional: Change background when selected */
+}
+
+.filtercategory label:hover {
+    background-color: #f7f7f7; /* Optional: Change background on hover */
+}
+/* Add styling for drop down input */
+#category-selector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#category-selector label {
+    font-size: 16px;
+    margin-right: 10px;
+    color: #333;
+}
+
+#task-category {
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    background-color: white;
+    color: #495057;
+    font-size: 16px;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.3s ease-in-out;
+}
+
+#task-category:hover,
+#task-category:focus {
+    border-color: #80bdff;
+}
+
 
 /* Mobile version styles */
 @media (max-width: 768px) {
@@ -156,10 +218,13 @@ footer {
     #task-input,
     #add-button,
     li button {
-        padding: 6px 12px; /* 40% reduction */
+        padding: 6px 10px; /* 40% reduction */
     }
 
     li {
         padding: 6px; /* 40% reduction */
+    }
+    .task-category-label{
+        display: none;
     }
 }
