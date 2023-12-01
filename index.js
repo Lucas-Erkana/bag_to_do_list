@@ -4,22 +4,47 @@ document.addEventListener("DOMContentLoaded", function () {
     const taskInput = document.getElementById("task-input");
     const addButton = document.getElementById("add-button");
     const taskList = document.getElementById("task-list");
+    const categorySelector = document.getElementById("category-selector");
+    const taskCategory = document.getElementById("task-category");
+    const categoryFilters = document.querySelectorAll('input[name="category-filter"]');
 
-    const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    savedTasks.forEach((task) => {
-        renderTask(task);
+    let savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    displayTasks();
+
+    addButton.addEventListener("click", () => {
+        categorySelector.style.display = "block";
     });
 
-    addButton.addEventListener("click", addTask);
-
-    function addTask() {
+    taskCategory.addEventListener("change", () => {
         const taskText = taskInput.value.trim();
+        const taskCat = taskCategory.value;
         if (taskText !== "") {
-            const task = { text: taskText, important: false, completed: false };
+            const task = { text: taskText, important: false, completed: false, category: taskCat };
             renderTask(task);
             saveTask(task);
             taskInput.value = "";
+            categorySelector.style.display = "none";
         }
+    });
+
+    categoryFilters.forEach(filter => filter.addEventListener('change', filterTasks));
+
+    function displayTasks(selectedCategory = 'All') {
+        taskList.innerHTML = '';
+        savedTasks.forEach(task => {
+            if (filterPasses(task.category, selectedCategory)) {
+                renderTask(task);
+            }
+        });
+    }
+
+    function filterTasks() {
+        const selectedCategory = document.querySelector('input[name="category-filter"]:checked').value;
+        displayTasks(selectedCategory);
+    }
+
+    function filterPasses(taskCategory, selectedCategory) {
+        return selectedCategory === 'All' || taskCategory === selectedCategory;
     }
 
     function renderTask(task) {
@@ -34,74 +59,44 @@ document.addEventListener("DOMContentLoaded", function () {
         listItem.innerHTML = `
             <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''}>
             <span class="task-text">${task.text}</span>
+            <span class="task-category-label">${task.category}</span>
             <button class="delete-button">Delete</button>
             <button class="important-button">Important</button>
         `;
-        listItem.querySelector(".task-checkbox").addEventListener("change", toggleCompletion);
-        listItem.querySelector(".delete-button").addEventListener("click", deleteTask);
-        listItem.querySelector(".important-button").addEventListener("click", toggleImportant);
-        listItem.querySelector(".task-text").addEventListener("click", makeEditable);
+        listItem.querySelector(".task-checkbox").addEventListener("change", toggleCompletion.bind(null, task));
+        listItem.querySelector(".delete-button").addEventListener("click", deleteTask.bind(null, task));
+        listItem.querySelector(".important-button").addEventListener("click", toggleImportant.bind(null, task));
         taskList.prepend(listItem);
     }
 
-    function toggleCompletion(event) {
-        const listItem = event.target.parentElement;
-        const taskText = listItem.querySelector(".task-text").textContent;
-        listItem.classList.toggle("completed");
-        updateTaskInStorage(taskText, taskText, listItem.classList.contains("important"), listItem.classList.contains("completed"));
+    function toggleCompletion(task, event) {
+        task.completed = event.target.checked;
+        saveTasks();
+        if (task.completed) {
+            event.target.parentElement.classList.add("completed");
+        } else {
+            event.target.parentElement.classList.remove("completed");
+        }
     }
 
-    function makeEditable(event) {
-        // ... existing code for makeEditable ...
+    function deleteTask(taskToDelete, event) {
+        savedTasks = savedTasks.filter(task => task !== taskToDelete);
+        saveTasks();
+        event.target.parentElement.remove();
     }
 
-    function updateTask(input, listItem, originalText) {
-        // ... existing code for updateTask ...
+    function toggleImportant(taskToToggle, event) {
+        taskToToggle.important = !taskToToggle.important;
+        saveTasks();
+        event.target.parentElement.classList.toggle("important");
     }
 
-    function saveTask(task) {
-        const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
-        savedTasks.unshift(task);
+    function saveTask(newTask) {
+        savedTasks.unshift(newTask);
+        saveTasks();
+    }
+
+    function saveTasks() {
         localStorage.setItem("tasks", JSON.stringify(savedTasks));
     }
-
-    function deleteTask(event) {
-        const listItem = event.target.parentElement;
-        const taskText = listItem.querySelector(".task-text").textContent;
-        removeTaskFromStorage(taskText);
-        listItem.remove();
-    }
-
-    function toggleImportant(event) {
-        const listItem = event.target.parentElement;
-        listItem.classList.toggle("important");
-        const taskText = listItem.querySelector(".task-text").textContent;
-        updateTaskInStorage(taskText, taskText, listItem.classList.contains("important"), listItem.classList.contains("completed"));
-    }
-
-    function removeTaskFromStorage(taskText) {
-        const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
-        const index = savedTasks.findIndex(t => t.text === taskText);
-        if (index !== -1) {
-            savedTasks.splice(index, 1);
-            localStorage.setItem("tasks", JSON.stringify(savedTasks));
-        }
-    }
-
-    function updateTaskInStorage(originalText, newText, isImportant, isCompleted) {
-        const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
-        const index = savedTasks.findIndex(t => t.text === originalText);
-        if (index !== -1) {
-            savedTasks[index].text = newText;
-            savedTasks[index].important = isImportant;
-            savedTasks[index].completed = isCompleted;
-            localStorage.setItem("tasks", JSON.stringify(savedTasks));
-        }
-    }
-
-    taskInput.addEventListener("keydown", function (event) {
-        if (event.key === "Enter") {
-            addTask();
-        }
-    });
 });

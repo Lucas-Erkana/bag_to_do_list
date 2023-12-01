@@ -18,12 +18,27 @@
             <input type="text" id="task-input" placeholder="Add a new task">
             <button id="add-button">Add</button>
         </div>
+        <div id="category-selector" style="display:none;">
+            <label>Pick a category before task can be added:</label>
+            <select id="task-category">
+                <option value="Personal">Select Category</option>
+                <option value="Personal">Personal</option>
+                <option value="Business">Business</option>
+            </select>
+        </div>
+        <div>
+            <label>Filter by:</label>
+            <input type="radio" name="category-filter" value="All" checked> All
+            <input type="radio" name="category-filter" value="Personal"> Personal
+            <input type="radio" name="category-filter" value="Business"> Business
+        </div>
         <ul id="task-list">
             <!-- Tasks will be dynamically added here -->
             <!-- Added 'Important' button for task prioritization -->
         </ul>
+  
     </div>
-
+    <br>
     <footer class="bg-dark text-white">
         <div class="text-center py-3">
           <div class="row">

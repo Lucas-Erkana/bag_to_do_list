@@ -97,7 +97,7 @@ li {
     }
 }
 
-.task-text,.delete-button,.important-button {
+.task-text,.delete-button,.important-button, .task-category-label {
     display: block; /* Ensure it's a block-level element to animate properly */
     animation: flyInFromBottom 0.5s ease-out; /* Apply the animation */
 }
