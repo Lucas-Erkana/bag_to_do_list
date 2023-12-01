@@ -6,7 +6,7 @@ body {
 }
 
 .container {
-    max-width: 600px;
+    max-width: 800px; /* Wider interface */
     margin: 0 auto;
     background-color: #fff;
     padding: 20px;
@@ -14,9 +14,30 @@ body {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
 }
 
+@keyframes borderAnimation {
+    0%, 100% {
+        border-color: transparent;
+    }
+    25% {
+        border-color: transparent transparent blue transparent;
+    }
+    50% {
+        border-color: transparent blue blue transparent;
+    }
+    75% {
+        border-color: blue blue blue transparent;
+    }
+    100% {
+        border-color: blue;
+    }
+}
+
 h1 {
     text-align: center;
     color: #333;
+    padding: 10px;
+    border: 2px solid transparent; /* Initial border */
+    animation: borderAnimation 2.5s infinite; /* Apply the animation */
 }
 
 .add-task {
@@ -24,9 +45,20 @@ h1 {
     margin-bottom: 20px;
 }
 
+@keyframes glowingAnimation {
+    0% { box-shadow: 0 0 5px 0px rgba(0, 123, 255, 0.7); }
+    50% { box-shadow: 0 0 20px 0px rgba(0, 123, 255, 1); }
+    100% { box-shadow: 0 0 5px 0px rgba(0, 123, 255, 0.7); }
+}
+
 #task-input {
     flex-grow: 1;
     padding: 10px;
+    margin-right: 10px;
+    border: 2px solid #007bff; /* Thicker border */
+    outline: none; /* Remove default focus outline */
+    animation: glowingAnimation 2s infinite; /* Apply the glow animation */
+    transition: border-color 0.3s; /* Smooth transition for border color */
 }
 
 #add-button {
@@ -50,13 +82,46 @@ li {
     background-color: #f9f9f9;
     margin-bottom: 10px;
     border-radius: 5px;
+    word-break: break-word; /* Allows text to wrap to next line */
+}
+
+@keyframes flyInFromBottom {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.task-text,.delete-button,.important-button {
+    display: block; /* Ensure it's a block-level element to animate properly */
+    animation: flyInFromBottom 0.5s ease-out; /* Apply the animation */
+}
+
+li .task-text {
+    flex-grow: 1; /* Allows text to take available space */
+    padding-right: 10px; /* Space between text and buttons */
 }
 
 li button {
-    background-color: #ff6347;
-    color: #fff;
-    border: none;
-    cursor: pointer;
+    margin-left: 5px; /* Space between buttons */
+}
+
+.delete-button {
+    background-color: red; /* Red background */
+    color: #fff; /* White text */
+    padding: 5px 10px; /* Bigger button */
+    border-radius: 4px; /* Rounded corners */
+}
+
+.important-button {
+    background-color: #ffc107; /* Standard color for importance */
+    color: #333; /* Dark text for contrast */
+    padding: 5px 10px; /* Bigger button */
+    border-radius: 4px; /* Rounded corners */
 }
 
 li.completed {
@@ -64,7 +129,28 @@ li.completed {
     background-color: #d3ffd3;
 }
 
-/* Add this style to your CSS file */
 li.important {
-    background-color: #ffc107; /* Change this color to your preference */
+    background-color: #ffc107; /* Color for important tasks */
+}
+
+/* Mobile version styles */
+@media (max-width: 768px) {
+    .container {
+        max-width: 480px; /* 40% reduction */
+        padding: 12px; /* 40% reduction */
+    }
+
+    h1 {
+        font-size: 60%; /* 40% reduction */
+    }
+
+    #task-input,
+    #add-button,
+    li button {
+        padding: 6px 12px; /* 40% reduction */
+    }
+
+    li {
+        padding: 6px; /* 40% reduction */
+    }
 }
